@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Missão Hacker – Pedro</title>
+
+  <!-- PWA: manifest + cor do tema -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b0f11">
+
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div id="start-screen" class="screen active">
+    <h1>Missão Hacker – Constituição</h1>
+    <p>Escolha seu avatar:</p>
+    <div id="avatar-selection"></div>
+    <button id="btn-start">Iniciar Missão</button>
+  </div>
+
+  <div id="game-screen" class="screen hidden">
+    <div id="hud">
+      <img id="player-avatar" src="" alt="Avatar" class="avatar"/>
+      <span id="level-label">Nível 1</span>
+    </div>
+
+    <div id="question-container">
+      <div id="question"></div>
+      <div id="answers"></div>
+    </div>
+
+    <div id="feedback"></div>
+  </div>
+
+  <div id="end-screen" class="screen hidden">
+    <h2>🎉 Missão completa, Pedro!</h2>
+    <p>Você concluiu toda a disciplina.</p>
+    <button id="btn-restart">Recomeçar</button>
+  </div>
+
+  <!-- PWA: registrar o Service Worker (COLEI AQUI) -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("./service-worker.js").catch(console.error);
+    }
+  </script>
+
+  <!-- seu jogo -->
+  <script src="script.js"></script>
+</body>
+</html>
+

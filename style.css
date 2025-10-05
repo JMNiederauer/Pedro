@@ -1,0 +1,58 @@
+:root{
+  --bg:#0b0f11;
+  --fg:#00ff88;
+  --fg-dark:#0b0f11;
+  --ok:#00ff5e;
+  --err:#ff3b3b;
+  --accent:#ffdd00;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  padding:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:"Courier New", monospace;
+  text-align:center;
+}
+
+.screen{display:none; padding:30px}
+.screen.active{display:block}
+.hidden{display:none}
+
+h1,h2{margin:10px 0 20px}
+p{margin:0 0 10px}
+
+#hud{
+  display:flex; align-items:center; justify-content:center;
+  gap:12px; margin-bottom:16px;
+}
+
+.avatar{
+  width:80px; height:80px; border-radius:50%;
+  border:2px solid var(--fg);
+  object-fit:cover; background:#081015;
+}
+
+#question{font-size:1.25rem; margin:10px 0 16px}
+#answers{display:grid; gap:10px; max-width:520px; margin:0 auto}
+
+button{
+  background:transparent; color:var(--fg); border:1px solid var(--fg);
+  padding:10px 16px; cursor:pointer; transition:.2s transform,.25s background,.25s color;
+  border-radius:6px;
+}
+button:hover{background:var(--fg); color:var(--fg-dark); transform:scale(1.03)}
+
+#feedback{margin-top:14px; min-height:28px; font-weight:bold}
+
+#avatar-selection{
+  display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:14px 0 6px;
+}
+#avatar-selection img{
+  width:64px; height:64px; border-radius:50%; border:2px solid var(--fg);
+  cursor:pointer; object-fit:cover; background:#081015;
+}
+#avatar-selection img.selected{border:3px solid var(--accent); box-shadow:0 0 10px #000 inset}
