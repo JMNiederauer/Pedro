@@ -1,5 +1,36 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ====== CONTEÚDO DOS NÍVEIS (baseado nos princípios que você enviou) ======
+  // ====== FALLBACKS: 3 avatares embutidos (mostram mesmo sem arquivos) ======
+  const FALLBACKS = [
+    // verde
+    "data:image/svg+xml;utf8," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'>
+        <rect width='100%' height='100%' fill='#0b0f11'/>
+        <circle cx='40' cy='40' r='36' fill='#00ff88'/>
+        <circle cx='40' cy='34' r='14' fill='#0b0f11'/>
+        <rect x='22' y='48' width='36' height='14' rx='7' fill='#0b0f11'/>
+      </svg>
+    `),
+    // azul
+    "data:image/svg+xml;utf8," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'>
+        <rect width='100%' height='100%' fill='#0b0f11'/>
+        <circle cx='40' cy='40' r='36' fill='#39a0ff'/>
+        <circle cx='40' cy='34' r='14' fill='#0b0f11'/>
+        <rect x='22' y='48' width='36' height='14' rx='7' fill='#0b0f11'/>
+      </svg>
+    `),
+    // rosa
+    "data:image/svg+xml;utf8," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' width='80' height='80'>
+        <rect width='100%' height='100%' fill='#0b0f11'/>
+        <circle cx='40' cy='40' r='36' fill='#ff7ad9'/>
+        <circle cx='40' cy='34' r='14' fill='#0b0f11'/>
+        <rect x='22' y='48' width='36' height='14' rx='7' fill='#0b0f11'/>
+      </svg>
+    `)
+  ];
+
+  // ====== CONTEÚDO DOS NÍVEIS ======
   const levels = [
     {
       nivel: 1,
@@ -91,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       nivel: 4,
-      titulo: "Valores Sociais do Trabalho e Livre Iniciativa",
+      titulo: "Valores do Trabalho & Livre Iniciativa",
       quiz: [
         {
           pergunta: "Valores sociais do trabalho significam:",
@@ -117,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
 
-  // ====== ESTADO DO JOGO ======
+  // ====== ESTADO ======
   let currentLevelIndex = 0;
   let currentQuizIndex = 0;
   let selectedAvatar = null;
@@ -135,34 +166,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const answersDiv    = document.getElementById("answers");
   const feedbackDiv   = document.getElementById("feedback");
 
-  // ====== AVATARES DISPONÍVEIS ======
+  // ====== CAMINHOS DOS AVATARES (arquivos do seu repo) ======
   const avatarFiles = [
-    "assets/avatars/avatar1.png",
-    "assets/avatars/avatar2.png",
-    "assets/avatars/avatar3.png"
+    "./assets/avatars/avatar1.png",
+    "./assets/avatars/avatar2.png",
+    "./assets/avatars/avatar3.png"
   ];
 
+  // Cria um <img> por avatar, tentando carregar o arquivo;
+  // se der erro (404 / caminho diferente), usa o fallback SVG.
   function initAvatarSelection() {
     avatarSel.innerHTML = "";
-    avatarFiles.forEach(file => {
+    avatarFiles.forEach((file, i) => {
       const img = document.createElement("img");
-      img.src = file;
       img.alt = "Avatar";
-      img.addEventListener("click", () => {
-        document.querySelectorAll("#avatar-selection img").forEach(i => i.classList.remove("selected"));
-        img.classList.add("selected");
-        selectedAvatar = file;
+
+      // tenta o arquivo
+      img.src = file;
+
+      // se falhar, usa o fallback correspondente
+      img.addEventListener("error", () => {
+        console.warn("Não encontrei:", file, "→ usando avatar de fallback.");
+        img.src = FALLBACKS[i % FALLBACKS.length];
       });
+
+      img.addEventListener("click", () => {
+        document.querySelectorAll("#avatar-selection img").forEach(el => el.classList.remove("selected"));
+        img.classList.add("selected");
+        selectedAvatar = img.src; // funciona tanto com arquivo quanto com fallback
+      });
+
       avatarSel.appendChild(img);
     });
   }
 
-  // ====== CONTROLE DE TELAS ======
+  // ====== TELAS ======
   btnStart.addEventListener("click", () => {
-    if (!selectedAvatar) {
-      alert("Escolha um avatar para começar!");
-      return;
-    }
+    if (!selectedAvatar) { alert("Escolha um avatar para começar!"); return; }
     showGame();
     playerAvatar.src = selectedAvatar;
     startLevel(0);
@@ -193,7 +233,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function showGame(){
     startScreen.classList.remove("active");
     startScreen.classList.add("hidden");
-
     gameScreen.classList.remove("hidden");
     gameScreen.classList.add("active");
   }
@@ -201,12 +240,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function showEnd(){
     gameScreen.classList.remove("active");
     gameScreen.classList.add("hidden");
-
     endScreen.classList.remove("hidden");
     endScreen.classList.add("active");
   }
 
-  // ====== LÓGICA DO JOGO ======
+  // ====== LÓGICA ======
   function startLevel(levelIndex){
     currentLevelIndex = levelIndex;
     currentQuizIndex = 0;
@@ -237,10 +275,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (idx === q.correta){
       feedbackDiv.textContent = "✔️ Correto! Avançando…";
-      feedbackDiv.style.color = "var(--ok)";
+      feedbackDiv.style.color = "#00ff5e";
     } else {
       feedbackDiv.textContent = "❌ Errado! Tente a próxima.";
-      feedbackDiv.style.color = "var(--err)";
+      feedbackDiv.style.color = "#ff3b3b";
     }
 
     setTimeout(() => {
@@ -248,18 +286,16 @@ document.addEventListener("DOMContentLoaded", () => {
       if (currentQuizIndex < lvl.quiz.length){
         renderQuestion();
       } else {
-        // terminou o nível
         const next = currentLevelIndex + 1;
         if (next < levels.length){
           startLevel(next);
         } else {
-          // terminou tudo
           showEnd();
         }
       }
-    }, 1200);
+    }, 1100);
   }
 
-  // Inicializa tela inicial
+  // start
   initAvatarSelection();
 });
